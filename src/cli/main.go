@@ -4,6 +4,7 @@ import (
     "fmt"
     "time"
     "os"
+    "model"
 )
 
 func PrintHelp(){
@@ -20,10 +21,11 @@ Useage:
     u, unfav: unfav the song playing now
     d, del: move the song playing now into trash
     l, loop: loop playing current song
+    p, pause: pause playing
     s, skip: skip the song playing now
     r, rec: show recommand channel
     ls, list: show all channel
-    c %, choose %: change channel, type id or name both ok. example:
+    c %, channel %: change channel, type id or name both ok. example:
         >> l
         华语(1) 欧美(2)
         >> c 1
@@ -36,6 +38,8 @@ func PrintNotSupport() {
 
 func main() {
     ch := make(chan string)
+    manager := model.GetManagerInstance()
+
     PrintHelp()
     fmt.Print(">> ")
 
@@ -47,6 +51,7 @@ func main() {
     go func() {
         for {
             cmd := <-ch
+            // Split cmd into words, then cmd is the first word
             switch cmd {
                 case "h":
                     fallthrough
@@ -56,6 +61,30 @@ func main() {
                     fallthrough
                 case "quit":
                     os.Exit(0)
+                case "f":
+                    fallthrough
+                case "fav":
+                    manager.Player().Fav()
+                case "u":
+                    fallthrough
+                case "unfav":
+                    manager.Player().UnFav()
+                case "d":
+                    fallthrough
+                case "del":
+                    manager.Player().Del()
+                case "l":
+                    fallthrough
+                case "loop":
+                    manager.Player().Loop()
+                case "p":
+                    fallthrough
+                case "pause":
+                    manager.Player().Pause()
+                case "s":
+                    fallthrough
+                case "skip":
+                    manager.Player().Skip()
                 case "":
                     // do nothing
                 default:
