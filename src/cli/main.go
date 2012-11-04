@@ -5,6 +5,8 @@ import (
     "time"
     "os"
     "model"
+    "strings"
+    "strconv"
 )
 
 func PrintHelp(){
@@ -14,26 +16,63 @@ Github:
     http://dou.bz/3c8G7L
     等你的pull request ;)
 
-Useage:
+Usage:
     h, help: list help
     q, quit: quit Gofm
-    f, fav: fav the song playing now
-    u, unfav: unfav the song playing now
-    d, del: move the song playing now into trash
-    l, loop: loop playing current song
+    f, fav: fav the song playing now [ login required ]
+    u, unfav: unfav the song playing now [ login required ]
+    d, del: move the song playing now into trash [ login required ]
+    l, loop: loop playing current song, :) I like it.
     p, pause: pause playing
     s, skip: skip the song playing now
     r, rec: show recommand channel
     ls, list: show all channel
-    c %, channel %: change channel, type id or name both ok. example:
-        >> l
+    hc, hot_channels: show hot channels
+    ci %, channel_info %: show channel information
+    c %, channel %: change channel, type "c id" and then enter. example:
+        >> ls
         华语(1) 欧美(2)
-        >> c 1
-        >> c 华语`)
+        >> c 1`)
 }
 
 func PrintNotSupport() {
     fmt.Println(`not supported cmd ;(`)
+}
+
+func PrintHotChannels() {
+    defer func() {
+        if r := recover(); r != nil {
+            fmt.Print("Fatal! not found hot channels.\n>> ")
+            return
+        }
+    }()
+    fmt.Print("\rFetching Hot Channels...")
+    channels := new(model.Channel)
+    total, hot_channels := channels.FetchHotChannels()
+    if total != 0 {
+        fmt.Print("\r")
+    }
+    for _, c := range(hot_channels) {
+        fmt.Print(c.Name, "(", c.Id, ") ")
+    }
+    fmt.Print("\n>> ")
+}
+
+func PrintChannelInfo(id string) {
+    defer func() {
+        if r := recover(); r != nil {
+            fmt.Print("Fatal! not found this channel.\n>> ")
+            return
+        }
+    }()
+    fmt.Println("\rFetching Channels ", id, " ...")
+    channel := new(model.Channel)
+    ch := channel.FetchChannelInfo(id)
+    fmt.Print(ch.Name + "(" + id + ") \n" +
+            "Intro: " + ch.Intro + "\n" +
+            "Hot Songs: " + strings.Join(ch.Hot_songs, " ") +
+            " (totals: " + strconv.Itoa(ch.Song_num) + ")")
+    fmt.Print("\n>> ")
 }
 
 func main() {
@@ -44,14 +83,12 @@ func main() {
     fmt.Print(">> ")
 
     go func() {
-        fmt.Println("\rAlways Online - 林俊杰 00:11\b2")
-        time.Sleep(1e9 * 10)
-    }()
-
-    go func() {
         for {
             cmd := <-ch
-            // Split cmd into words, then cmd is the first word
+            cmds := strings.Split(cmd, " ")
+            if len(cmds) > 0 {
+                cmd = cmds[0]
+            }
             switch cmd {
                 case "h":
                     fallthrough
@@ -85,6 +122,26 @@ func main() {
                     fallthrough
                 case "skip":
                     manager.Player().Skip()
+                case "hc":
+                    fallthrough
+                case "hot_channels":
+                    go PrintHotChannels()
+                case "ci":
+                    fallthrough
+                case "channel_info":
+                    if len(cmds) >= 2 {
+                        go PrintChannelInfo(cmds[1])
+                    } else {
+                        PrintNotSupport()
+                    }
+                case "c":
+                    fallthrough
+                case "channel":
+                    if len(cmds) >= 2 {
+                        manager.ChooseChannel(cmds[1])
+                    } else {
+                        PrintNotSupport()
+                    }
                 case "":
                     // do nothing
                 default:
@@ -96,8 +153,10 @@ func main() {
 
     go func() {
         var cmd string
+        var param string
         for {
-            fmt.Scanln(&cmd)
+            fmt.Scanln(&cmd, &param)
+            cmd = cmd + " " + param
             ch <- cmd
             cmd = ""
         }

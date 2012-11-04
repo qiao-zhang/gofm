@@ -20,9 +20,23 @@ func NewPlaylist(r int, msg string, song []Song) *Playlist {
 }
 
 func (this *Playlist) FetchChannel(channel int, typ string) {
+    this.FetchChannelBase(channel, typ, "")
+}
+
+func (this *Playlist) FetchChannelNextSong( channel int, typ string, sid string) {
+    this.FetchChannelBase(channel, typ, sid)
+}
+
+func (this *Playlist) FetchChannelBase(channel int, typ string, sid string) {
     fetch_url := fm_site + "/j/mine/playlist?type=" + typ + "&channel=" + strconv.Itoa(channel)
+    if sid != "" {
+        fetch_url += "&sid=" + sid
+    }
     chs := make(chan int)
     timeout := make(chan bool, 1)
+    if this == nil {
+        this = new(Playlist)
+    }
 
     go func() {
         time.Sleep( time.Second * 10 )
