@@ -44,7 +44,13 @@ func (this *Playlist) FetchChannelBase(channel int, typ string, sid string) {
     }()
 
     go func() {
+        defer func(){
+            if r:=recover(); r!= nil {
+                log.Fatal("Gofm can't parse playlist, plz contact developer")
+            }
+        }()
         resp, err := http.Get(fetch_url)
+        log.Print(fetch_url)
         if err != nil {
             log.Fatal("Gofm can't fetch playlist, plz check network")
             return
@@ -59,8 +65,7 @@ func (this *Playlist) FetchChannelBase(channel int, typ string, sid string) {
 
         parse_err := json.Unmarshal(playlist_str, this)
         if parse_err != nil {
-            panic( parse_err)
-            //log.Fatal("Gofm can't parse playlist, plz contact developer")
+            log.Fatal("Gofm can't parse playlist, plz contact developer")
         }
 
         if this.R == fm_mine_playlist_err_handle {

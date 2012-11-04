@@ -1,6 +1,7 @@
 package model
 
 import (
+    //"time"
     "log"
     "strconv"
 )
@@ -11,6 +12,7 @@ type Manager interface {
     ProgressInPlaylist() (int)
     Player() (FMPlayer)
     ChooseChannel(id string)
+    Start(trigger chan string)
 }
 
 type manager struct{
@@ -50,21 +52,19 @@ func (m *manager) Player() (FMPlayer) {
 }
 
 func (m *manager) ChooseChannel(channel_id string) {
-    go func() {
-        ch := new(Channel)
-        m.channel = ch.FetchChannelInfo(channel_id)
-    }()
+    //go func() {
+        //ch := new(Channel)
+        //m.channel = ch.FetchChannelInfo(channel_id)
+    //}()
 
-    go func() {
-        m.playlist = nil
-        m.progressInPlaylist = 0
-        cid, err := strconv.Atoi(channel_id)
-        if err != nil {
-            log.Printf("U should type a number id")
-            return
-        }
-        m.UpdatePlaylist(cid)
-    }()
+    m.playlist = nil
+    m.progressInPlaylist = 0
+    cid, err := strconv.Atoi(channel_id)
+    if err != nil {
+        log.Printf("U should type a number id")
+        return
+    }
+    m.UpdatePlaylist(cid)
 }
 
 func (m *manager) CurrentSong() (song *Song) {
@@ -81,8 +81,9 @@ func (m *manager) UpdatePlaylist(channel_id int) {
     var typ string
     if m.playlist == nil  || len(m.playlist.Song)==0 {
         typ = "n"
+        m.playlist = new(Playlist)
         m.playlist.FetchChannel(channel_id, typ)
-    } else if len(m.playlist.Song) == m.progressInPlaylist {
+    } else {
         typ = "p"
         m.playlist.FetchChannelNextSong(channel_id, typ,
                 m.playlist.Song[m.progressInPlaylist].Sid)
@@ -91,4 +92,22 @@ func (m *manager) UpdatePlaylist(channel_id int) {
 
 func (m *manager) SetPlayer(p FMPlayer) {
     m.player = p
+}
+
+func (m *manager) Start(trigger chan string)  {
+    // init channel, first get into channel 1
+    m.ChooseChannel("1")
+    channel_id := 1
+    if m.playlist != nil {
+        // init player, first send current_song
+        for {
+            playlist := m.playlist
+            m.progressInPlaylist = 0
+            for i:=0; i<len(playlist.Song) ; i++ {
+                m.progressInPlaylist = i
+                m.player.Play(playlist.Song[m.progressInPlaylist].Url, trigger)
+            }
+            m.UpdatePlaylist( channel_id ) // may stop several seconds
+        }
+    }
 }

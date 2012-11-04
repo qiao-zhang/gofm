@@ -11,3 +11,11 @@ func TestGetManagerInstance(t *testing.T) {
         t.Errorf("two instance are not the same")
     }
 }
+
+func TestChooseChannel(t *testing.T) {
+    m := GetManagerInstance()
+    m.ChooseChannel("1")
+    if m.Playlist() == nil {
+        t.Errorf("After chooseChannel, playlist should be update!")
+    }
+}

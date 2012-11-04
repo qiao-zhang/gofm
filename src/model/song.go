@@ -1,20 +1,40 @@
 package model
 
+import (
+    //"log"
+    //"strconv"
+    "fmt"
+)
+
+
 type Song struct {
+    Picture string
+    AlbumTitle string
+    Company string
+    Rating_avg float32
+    PublicTime string
+    Ssid string
+    Album string
+    //Like int
+    Artist string
     Url Url
     Title string
-    Aid string
-    Sid string
-    Ssid string
-    // TODO Hide these 2 value cause' I don't know why it cause problem now
-    //Like int
-    //Length int // 
     Subtype string
-    Artist string
-    Album string
-    PublicTime string
-    RatingAvg float32
-    Company string
-    AlbumTitle string
-    Picture string
+    //Length string
+    Sid string
+    Aid string
+}
+
+func (s Song) Format() (str string) {
+    str = s.Artist + " - " + s.Title + " ("+ s.AlbumTitle +")" + s.LengthFormat()
+    return
+}
+
+func (s Song) LengthFormat() (str string) {
+    //fl, _ := s.Length.(float64)
+    //fi := int(fl)
+    fi := 300
+    minute, second := fi/60, fi%60
+    str = fmt.Sprintf("%0d:%0d", minute, second)
+    return
 }
