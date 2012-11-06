@@ -20,20 +20,18 @@ type Song struct {
     Url Url
     Title string
     Subtype string
-    //Length string
+    Length float64
     Sid string
     Aid string
 }
 
 func (s Song) Format() (str string) {
-    str = s.Artist + " - " + s.Title + " ("+ s.AlbumTitle +")" + s.LengthFormat()
+    str = s.Artist + " - " + s.Title + " ("+ s.AlbumTitle +") - " + s.LengthFormat()
     return
 }
 
 func (s Song) LengthFormat() (str string) {
-    //fl, _ := s.Length.(float64)
-    //fi := int(fl)
-    fi := 300
+    fi := int(s.Length)
     minute, second := fi/60, fi%60
     str = fmt.Sprintf("%0d:%0d", minute, second)
     return

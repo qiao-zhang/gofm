@@ -6,6 +6,8 @@ import (
     "log"
     "encoding/json"
     "io/ioutil"
+    "strconv"
+    "strings"
 )
 
 
@@ -140,4 +142,10 @@ func (c Channel) FetchChannelInfo(id string) (channel *Channel){
     return
 }
 
-
+func (c Channel) Format() (str string) {
+    str = c.Name + "(" + strconv.Itoa(c.Id) + ") \n" +
+            "Intro: " + c.Intro + "\n" +
+            "Hot Songs: " + strings.Join(c.Hot_songs, " ") +
+            " (totals: " + strconv.Itoa(c.Song_num) + ")"
+    return
+}

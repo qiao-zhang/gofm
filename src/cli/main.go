@@ -85,26 +85,26 @@ func main() {
 
 
     // This goroutine is used to recieve message from manager
-    go manager.Start(manager_trigger)
+    go manager.Delegate(manager_trigger)
 
-    go func() {
-        for {
-            select {
-            case msg := <-manager_trigger:
-                switch msg{
-                case "current_song":
-                    song := manager.Playlist().Song[manager.ProgressInPlaylist()]
-                    fmt.Println("\r"+ song.Format() )
-                case "pause_song":
-                    fmt.Println("\rpausing, U can type `r` or `resume` to continue.")
-                case "loop_song":
-                    song := manager.Playlist().Song[manager.ProgressInPlaylist()]
-                    fmt.Println( "\rlooping: " + song.Format() )
-                }
-            }
-            fmt.Print(">> ")
-        }
-    }()
+    //go func() {
+        //for {
+            //select {
+            //case msg := <-manager_trigger:
+                //switch msg{
+                //case "current_song":
+                    //song := manager.Playlist().Song[manager.ProgressInPlaylist()]
+                    //fmt.Println("\r"+ song.Format() )
+                //case "pause_song":
+                    //fmt.Println("\rpausing, U can type `r` or `resume` to continue.")
+                //case "loop_song":
+                    //song := manager.Playlist().Song[manager.ProgressInPlaylist()]
+                    //fmt.Println( "\rlooping: " + song.Format() )
+                //}
+            //}
+            //fmt.Print(">> ")
+        //}
+    //}()
 
     // handle user input command
     go func() {
@@ -126,31 +126,34 @@ func main() {
                 case "f":
                     fallthrough
                 case "fav":
-                    manager.Player().Fav()
+                    manager_trigger <- "fav_song"
                 case "u":
                     fallthrough
                 case "unfav":
-                    manager.Player().UnFav()
+                    manager_trigger <- "unfav_song"
                 case "d":
                     fallthrough
                 case "del":
-                    manager.Player().Del()
+                    manager_trigger <- "del_song"
                 case "l":
                     fallthrough
                 case "loop":
-                    manager.Player().Loop(manager_trigger)
+                    manager_trigger <- "loop_song"
+                    song := manager.Playlist().Song[manager.ProgressInPlaylist()]
+                    fmt.Println( "\rlooping: " + song.Format() )
                 case "p":
                     fallthrough
                 case "pause":
-                    manager.Player().Pause(manager_trigger)
+                    manager_trigger <- "pause_song"
+                    fmt.Print("\rpausing, U can type `r` or `resume` to continue.\n >> ")
                 case "r":
                     fallthrough
                 case "resume":
-                    manager.Player().Resume(manager_trigger)
+                    manager_trigger <- "resume_song"
                 case "s":
                     fallthrough
                 case "skip":
-                    manager.Player().Skip(manager_trigger)
+                    manager_trigger <- "skip_song"
                 case "hc":
                     fallthrough
                 case "hot_channels":

@@ -16,3 +16,12 @@ func TestFetchChannalPlaylist(t *testing.T) {
         t.Errorf( "%v", playlist.Song )
     }
 }
+
+func TestFetchChannelNextSong(t *testing.T) {
+    playlist := new(Playlist)
+    channel := 1
+    typ := "p"
+    sid := "1457109"
+    playlist.FetchChannelNextSong( channel, typ, sid)
+}
+
