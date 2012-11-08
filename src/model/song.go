@@ -36,3 +36,11 @@ func (s Song) LengthFormat() (str string) {
     str = fmt.Sprintf("%0d:%0d", minute, second)
     return
 }
+
+func (s Song) IsAdvertisement() (is_ad bool) {
+    is_ad = false
+    if s.Subtype == "T" {
+        is_ad = true
+    }
+    return
+}

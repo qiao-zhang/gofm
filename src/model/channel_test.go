@@ -2,6 +2,7 @@ package model
 
 import (
     "testing"
+    "fmt"
 )
 
 func testInit(t *testing.T) {
@@ -33,12 +34,23 @@ func TestFetchHotChannels(t *testing.T) {
     }
 }
 
-func TestFetchChannelInfo(t *testing.T) {
-
+func ExampleFetchChannelInfo() {
     c := new(Channel)
     channel := c.FetchChannelInfo("1")
+    fmt.Println(channel.Name)
+    // Output: 华语
+}
 
-    if channel.Name != "华语" {
-        t.Errorf("channel.Name != 华语", channel.Name)
-    }
+func ExampleChannelFormat() {
+    c := new(Channel)
+    c.Id = 0
+    c.Name = "TestName"
+    c.Intro = "TestIntro"
+    c.Hot_songs = []string{"TestHotsong1", "TestHotsong2", "TestHotsong3"}
+    c.Song_num = 1024
+    fmt.Println(c.Format())
+    // Output:
+    // TestName(0)
+    // Intro: TestIntro
+    // Hot Songs: TestHotsong1, TestHotsong2, TestHotsong3 (totals: 1024)
 }

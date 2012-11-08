@@ -87,25 +87,6 @@ func main() {
     // This goroutine is used to recieve message from manager
     go manager.Delegate(manager_trigger)
 
-    //go func() {
-        //for {
-            //select {
-            //case msg := <-manager_trigger:
-                //switch msg{
-                //case "current_song":
-                    //song := manager.Playlist().Song[manager.ProgressInPlaylist()]
-                    //fmt.Println("\r"+ song.Format() )
-                //case "pause_song":
-                    //fmt.Println("\rpausing, U can type `r` or `resume` to continue.")
-                //case "loop_song":
-                    //song := manager.Playlist().Song[manager.ProgressInPlaylist()]
-                    //fmt.Println( "\rlooping: " + song.Format() )
-                //}
-            //}
-            //fmt.Print(">> ")
-        //}
-    //}()
-
     // handle user input command
     go func() {
         for {
@@ -139,13 +120,14 @@ func main() {
                     fallthrough
                 case "loop":
                     manager_trigger <- "loop_song"
-                    song := manager.Playlist().Song[manager.ProgressInPlaylist()]
-                    fmt.Println( "\rlooping: " + song.Format() )
+                    //song := manager.Playlist().Song[manager.ProgressInPlaylist()]
+                    fmt.Println( "\rlooping: " + manager.CurrentSong().Format())
+                    //fmt.Println( "\rlooping: " + song.Format() )
                 case "p":
                     fallthrough
                 case "pause":
                     manager_trigger <- "pause_song"
-                    fmt.Print("\rpausing, U can type `r` or `resume` to continue.\n >> ")
+                    fmt.Print("\rpausing, U can type `r` or `resume` to continue.\n")
                 case "r":
                     fallthrough
                 case "resume":

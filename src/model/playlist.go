@@ -65,8 +65,6 @@ func (this *Playlist) FetchChannelBase(channel int, typ string, sid string) {
 
         _ = json.Unmarshal(playlist_str, this)
         //if parse_err != nil {
-            //log.Print( string(playlist_str))
-            //log.Print( this)
             //log.Fatal("Gofm can't parse playlist, plz contact developer")
         //}
 

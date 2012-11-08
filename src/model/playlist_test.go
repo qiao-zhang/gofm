@@ -4,7 +4,7 @@ import (
     "testing"
 )
 
-func TestFetchChannalPlaylist(t *testing.T) {
+func TestFetchChannel(t *testing.T) {
     playlist := new(Playlist)
     playlist.FetchChannel(1, "n")
 
@@ -23,5 +23,9 @@ func TestFetchChannelNextSong(t *testing.T) {
     typ := "p"
     sid := "1457109"
     playlist.FetchChannelNextSong( channel, typ, sid)
+
+    if len(playlist.Song) == 0 {
+        t.Errorf( "%v", playlist)
+    }
 }
 

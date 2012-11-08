@@ -68,6 +68,8 @@ func (c Channel) FetchHotChannels() (total int, channels []Channel) {
         }
 
         hot_channels := new(HotChannels)
+        log.Println(hot_channels)
+        log.Println(string(channel_str))
         parse_err := json.Unmarshal(channel_str, hot_channels)
         if parse_err != nil {
             panic( parse_err)
@@ -143,9 +145,9 @@ func (c Channel) FetchChannelInfo(id string) (channel *Channel){
 }
 
 func (c Channel) Format() (str string) {
-    str = c.Name + "(" + strconv.Itoa(c.Id) + ") \n" +
+    str = c.Name + "(" + strconv.Itoa(c.Id) + ")\n" +
             "Intro: " + c.Intro + "\n" +
-            "Hot Songs: " + strings.Join(c.Hot_songs, " ") +
+            "Hot Songs: " + strings.Join(c.Hot_songs, ", ") +
             " (totals: " + strconv.Itoa(c.Song_num) + ")"
     return
 }

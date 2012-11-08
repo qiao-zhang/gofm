@@ -15,7 +15,12 @@ func TestGetManagerInstance(t *testing.T) {
 func TestChooseChannel(t *testing.T) {
     m := GetManagerInstance()
     m.ChooseChannel("1")
+
     if m.Playlist() == nil {
         t.Errorf("After chooseChannel, playlist should be update!")
+    }
+
+    if m.ProgressInPlaylist() != 0 {
+        t.Errorf("progress in playlist should be zero")
     }
 }

@@ -12,6 +12,7 @@ type Manager interface {
     Playlist() (*Playlist)
     ProgressInPlaylist() (int)
     Player() (FMPlayer)
+    CurrentSong() (song *Song)
     ChooseChannel(id string)
     Delegate(trigger chan string)
 }
@@ -111,8 +112,8 @@ func (m *manager) Delegate(trigger chan string)  {
                 m.progressInPlaylist = i
                 song := playlist.Song[m.progressInPlaylist]
                 m.player = &Mp3Player{song}
-                log.Println("current song ...", song)
-                if song.LengthFormat() == "0:0" { // we thought it ad, just block it
+                //log.Println("current song ...", song)
+                if song.IsAdvertisement() {
                     log.Println("we thought song[", song.Title, "] is an ad, block it")
                     continue
                 }
@@ -122,7 +123,10 @@ func (m *manager) Delegate(trigger chan string)  {
                     go m.UpdatePlaylist( channel_id ) 
                 }
 
-                log.Println("Song delegate to FMPlayer: ", m.player)
+                //log.Println("Song delegate to FMPlayer: ", m.player)
+                go func() {
+                    trigger <- "current_song"
+                }()
                 err := m.player.Delegate(song, trigger)
                 if err != nil {
                     panic(err)
